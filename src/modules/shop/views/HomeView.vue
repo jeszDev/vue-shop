@@ -90,32 +90,54 @@
     </a>
   </div>
 
-  <div v-if="isLoading" class="text-center h-[500px]">
+  <div v-if="!products" class="text-center h-[500px]">
     <h1 class="text-xl">Cargando productos</h1>
     <p>Espere por favor</p>
   </div>
 
-  <ProductList :products="products" />
+  <ProductList v-else :products="products" />
 
-  <ButtonPagination :has-more-data="true" :is-first-page="true" :page="1" />
+  <ButtonPagination
+    :has-more-data="!!products && products.length < 10"
+    :is-first-page="page === 1"
+    :page="page"
+  />
 </template>
 
 <script setup lang="ts">
 import { getProductsAction } from '../../products/actions/get-products.action';
-import { useQuery } from '@tanstack/vue-query';
+import { useQuery, useQueryClient } from '@tanstack/vue-query';
 import ProductList from '../../products/components/ProductList.vue';
 import ButtonPagination from '../../common/components/ButtonPagination.vue';
 import { useRoute } from 'vue-router';
-import { ref } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 
 const route = useRoute();
 const page = ref(Number(route.query.page || 1));
+const queryClient = useQueryClient();
 
 const { data: products, isLoading } = useQuery({
-  queryKey: ['products', { page: page.value }],
+  queryKey: ['products', { page: page }],
   queryFn: () => getProductsAction(page.value),
 });
 
-getProductsAction();
+watch(
+  () => route.query.page,
+  (newPage) => {
+    page.value = Number(newPage || 1);
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  },
+);
+
+watchEffect(() => {
+  queryClient.prefetchQuery({
+    queryKey: ['products', { page: page.value + 1 }],
+    queryFn: () => getProductsAction(page.value + 1),
+  });
+});
 </script>
 <style scoped></style>
