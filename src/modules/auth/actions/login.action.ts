@@ -10,7 +10,7 @@ interface LoginError {
 interface LoginSuccess {
   ok: true;
   user: User;
-  message: string;
+  token: string;
 }
 
 export const loginAction = async (
@@ -36,6 +36,7 @@ export const loginAction = async (
       };
     }
 
+    console.log(error);
     throw new Error('No se pudo realizar la petición');
   }
 };
