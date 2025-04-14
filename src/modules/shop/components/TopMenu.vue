@@ -21,18 +21,36 @@
       </a>
       <div class="mt-2 sm:mt-0 sm:flex md:order-2">
         <!-- Login Button -->
-        <button
-          type="button"
-          class="rounde mr-3 hidden border border-blue-700 py-1.5 px-6 text-center text-sm font-medium text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 md:inline-block rounded-lg"
-        >
-          Login
-        </button>
-        <button
-          type="button"
-          class="rounde mr-3 hidden bg-blue-700 py-1.5 px-6 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 md:mr-0 md:inline-block rounded-lg"
-        >
-          Register
-        </button>
+        <template v-if="!authStore.isAuthenticated">
+          <RouterLink
+            to="/auth/login"
+            class="mr-3 hidden border border-blue-700 py-1.5 px-6 text-center text-sm font-medium text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 md:inline-block rounded-lg"
+          >
+            Login
+          </RouterLink>
+          <RouterLink
+            to="/auth/register"
+            class="mr-3 hidden bg-blue-700 py-1.5 px-6 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 md:mr-0 md:inline-block rounded-lg"
+          >
+            Register
+          </RouterLink>
+        </template>
+        <template v-if="authStore.isAuthenticated">
+          <RouterLink
+            v-if="authStore.isAdmin"
+            to="/admin"
+            class="mr-3 hidden border border-blue-700 py-1.5 px-6 text-center text-sm font-medium text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 md:inline-block rounded-lg"
+          >
+            Admin
+          </RouterLink>
+          <button
+            @click="authStore.logout()"
+            type="button"
+            class="mr-3 hidden bg-blue-700 py-1.5 px-6 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 md:mr-0 md:inline-block rounded-lg"
+          >
+            Cerrar sesión
+          </button>
+        </template>
         <!-- Register Button -->
         <button
           data-collapse-toggle="navbar-sticky"
@@ -67,7 +85,7 @@
           <li>
             <a
               href="#"
-              class="block rounded bg-blue-700 py-2 pl-3 pr-4 text-white md:bg-transparent md:p-0 md:text-blue-700"
+              class="block bg-blue-700 py-2 pl-3 pr-4 text-white md:bg-transparent md:p-0 md:text-blue-700"
               aria-current="page"
               >Home</a
             >
@@ -75,21 +93,21 @@
           <li>
             <a
               href="#"
-              class="block rounded py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
+              class="block py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
               >About</a
             >
           </li>
           <li>
             <a
               href="#"
-              class="block rounded py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
+              class="block py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
               >Services</a
             >
           </li>
           <li>
             <a
               href="#"
-              class="block rounded py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
+              class="block py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
               >Contact</a
             >
           </li>
@@ -99,6 +117,10 @@
   </nav>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useAuthStore } from '../../auth/stores/auth.store';
+
+const authStore = useAuthStore();
+</script>
 
 <style scoped></style>
